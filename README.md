@@ -659,10 +659,13 @@ La base de données inclut:
   - Composition, effets
   - Contre-indications
 
-- **Compte utilisateur de test**
-  - Login: `aribiA`
-  - Password: `aaaa`
-  - Permissions: CRUD complet
+- **Comptes utilisateurs de test**
+  - **Admin** (CRUD complet)
+    - Login: `aribiA`
+    - Password: `aaaa`
+  - **Visiteur** (Lecture seule)
+    - Login: `visiteur1`
+    - Password: `Visiteur123!`
 
 ---
 
