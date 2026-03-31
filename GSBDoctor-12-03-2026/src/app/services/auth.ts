@@ -38,9 +38,51 @@ export class AuthService {
   readonly currentUser = signal<string | null>(null);
 
   /**
+   * Signal contenant le role de l'utilisateur
+   */
+  readonly currentRole = signal<'admin' | 'visitor' | null>(null);
+
+  /**
+   * Signal indiquant si l'utilisateur courant est administrateur
+   */
+  readonly isAdmin = signal<boolean>(false);
+
+  /**
    * Signal contenant le message d'erreur (null si pas d'erreur)
    */
   readonly errorMessage = signal<string | null>(null);
+
+  private decodeJwtPayload(token: string): Record<string, unknown> | null {
+    try {
+      const parts = token.split('.');
+      if (parts.length < 2) {
+        return null;
+      }
+
+      const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const json = decodeURIComponent(
+        atob(payload)
+          .split('')
+          .map((char) => `%${`00${char.charCodeAt(0).toString(16)}`.slice(-2)}`)
+          .join(''),
+      );
+
+      return JSON.parse(json) as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+  }
+
+  private getRoleFromToken(token: string): 'admin' | 'visitor' {
+    const payload = this.decodeJwtPayload(token);
+    const roleClaim = payload?.['role'];
+    if (roleClaim === 'admin') {
+      return 'admin';
+    }
+
+    const isAdminClaim = payload?.['isAdmin'];
+    return isAdminClaim === true ? 'admin' : 'visitor';
+  }
 
   constructor() {
     // Vérifier s'il existe un ticket stocké au démarrage
@@ -62,6 +104,9 @@ export class AuthService {
         // Restaurer l'état
         this.currentTicket.set(authData.ticket);
         this.currentUser.set(authData.username);
+        const role = authData.role || this.getRoleFromToken(authData.ticket);
+        this.currentRole.set(role);
+        this.isAdmin.set(role === 'admin');
         this.isAuthenticated.set(true);
       } catch (error) {
         // Si erreur de parsing, supprimer les données corrompues
@@ -81,21 +126,25 @@ export class AuthService {
 
     // Simple POST request
     return this.http
-      .post<{ data: string }>(`${this.API_URL}/connexion`, {
+      .post<{ data: string; role?: string }>(`${this.API_URL}/connexion`, {
         login: cleanedLogin,
         password: credentials.password,
       })
       .pipe(
         tap((response) => {
           const token = response.data;
+          const role = (response.role || this.getRoleFromToken(token)) as 'admin' | 'visitor';
           this.currentTicket.set(token);
           this.currentUser.set(cleanedLogin);
+          this.currentRole.set(role);
+          this.isAdmin.set(role === 'admin');
           this.isAuthenticated.set(true);
           localStorage.setItem(
             this.TICKET_KEY,
             JSON.stringify({
               ticket: token,
               username: cleanedLogin,
+              role,
             }),
           );
         }),
@@ -114,8 +163,19 @@ export class AuthService {
    * Supprime le ticket et réinitialise l'état
    */
   logout(): void {
+    this.http.get(`${this.API_URL}/deconnexion`).subscribe({
+      next: () => undefined,
+      error: () => undefined,
+    });
+
+    this.clearSession();
+  }
+
+  clearSession(): void {
     this.currentTicket.set(null);
     this.currentUser.set(null);
+    this.currentRole.set(null);
+    this.isAdmin.set(false);
     this.isAuthenticated.set(false);
     localStorage.removeItem(this.TICKET_KEY);
   }

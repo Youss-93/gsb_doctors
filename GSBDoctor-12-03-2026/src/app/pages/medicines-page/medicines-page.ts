@@ -4,19 +4,21 @@ import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MedicinesService, MedicinePayload } from '../../services/medicines.service';
 import { Medicine } from '../../types/medicine.interface';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-medicines-page',
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './medicines-page.html',
-  styleUrl: './medicines-page.css'
+  styleUrl: './medicines-page.css',
 })
 export class MedicinesPageComponent {
   private medicinesService = inject(MedicinesService);
+  private authService = inject(AuthService);
 
   medicines = toSignal(this.medicinesService.getMedicines(), {
-    initialValue: [] as Medicine[]
+    initialValue: [] as Medicine[],
   });
 
   searchTerm = signal('');
@@ -24,6 +26,7 @@ export class MedicinesPageComponent {
   successMessage = signal('');
   isSubmitting = signal(false);
   editingId = signal<string | null>(null);
+  readonlyMode = computed(() => !this.authService.isAdmin());
 
   form = signal({
     id: '',
@@ -31,7 +34,7 @@ export class MedicinesPageComponent {
     familyCode: 'AA',
     composition: '',
     effects: '',
-    againstIndications: ''
+    againstIndications: '',
   });
 
   filteredMedicines = computed(() => {
@@ -44,7 +47,7 @@ export class MedicinesPageComponent {
       [m.businessName, m.family, m.composition, m.effects, m.againstIndications]
         .join(' ')
         .toLowerCase()
-        .includes(term)
+        .includes(term),
     );
   });
 
@@ -60,17 +63,25 @@ export class MedicinesPageComponent {
       familyCode: 'AA',
       composition: '',
       effects: '',
-      againstIndications: ''
+      againstIndications: '',
     });
     this.editingId.set(null);
   }
 
   startCreate(): void {
+    if (this.readonlyMode()) {
+      return;
+    }
+
     this.clearMessages();
     this.resetForm();
   }
 
   startEdit(medicine: Medicine): void {
+    if (this.readonlyMode()) {
+      return;
+    }
+
     this.clearMessages();
     this.editingId.set(medicine.id);
     this.form.set({
@@ -79,21 +90,26 @@ export class MedicinesPageComponent {
       familyCode: medicine.familyCode || 'AA',
       composition: medicine.composition,
       effects: medicine.effects,
-      againstIndications: medicine.againstIndications
+      againstIndications: medicine.againstIndications,
     });
   }
 
   updateFormField(
     field: 'id' | 'businessName' | 'familyCode' | 'composition' | 'effects' | 'againstIndications',
-    value: string
+    value: string,
   ): void {
     this.form.update((current) => ({
       ...current,
-      [field]: value
+      [field]: value,
     }));
   }
 
   saveMedicine(): void {
+    if (this.readonlyMode()) {
+      this.errorMessage.set('Mode lecture seule: action reservee aux administrateurs.');
+      return;
+    }
+
     this.clearMessages();
     this.isSubmitting.set(true);
 
@@ -103,7 +119,7 @@ export class MedicinesPageComponent {
       idFamille: this.form().familyCode.trim().toUpperCase(),
       composition: this.form().composition.trim(),
       effets: this.form().effects.trim(),
-      contreIndications: this.form().againstIndications.trim()
+      contreIndications: this.form().againstIndications.trim(),
     };
 
     if (!payload.id || !payload.nomCommercial || !payload.idFamille) {
@@ -118,7 +134,7 @@ export class MedicinesPageComponent {
           idFamille: payload.idFamille,
           composition: payload.composition,
           effets: payload.effets,
-          contreIndications: payload.contreIndications
+          contreIndications: payload.contreIndications,
         })
       : this.medicinesService.createMedicine(payload);
 
@@ -127,29 +143,34 @@ export class MedicinesPageComponent {
         this.successMessage.set(this.editingId() ? 'Medicament modifie.' : 'Medicament cree.');
         this.resetForm();
         this.medicines = toSignal(this.medicinesService.getMedicines(), {
-          initialValue: [] as Medicine[]
+          initialValue: [] as Medicine[],
         });
         this.isSubmitting.set(false);
       },
       error: () => {
         this.errorMessage.set('Operation impossible. Verifie les champs.');
         this.isSubmitting.set(false);
-      }
+      },
     });
   }
 
   deleteMedicine(id: string): void {
+    if (this.readonlyMode()) {
+      this.errorMessage.set('Mode lecture seule: action reservee aux administrateurs.');
+      return;
+    }
+
     this.clearMessages();
     this.medicinesService.deleteMedicine(id).subscribe({
       next: () => {
         this.successMessage.set('Medicament supprime.');
         this.medicines = toSignal(this.medicinesService.getMedicines(), {
-          initialValue: [] as Medicine[]
+          initialValue: [] as Medicine[],
         });
       },
       error: () => {
         this.errorMessage.set('Suppression impossible (peut-etre reference dans offrir).');
-      }
+      },
     });
   }
 }

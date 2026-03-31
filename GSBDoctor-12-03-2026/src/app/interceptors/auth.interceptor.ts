@@ -21,8 +21,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   if (ticket) {
     modifiedReq = req.clone({
       setHeaders: {
-        Authorization: `Bearer ${ticket}`
-      }
+        Authorization: `Bearer ${ticket}`,
+      },
     });
   }
 
@@ -31,12 +31,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error) => {
       // Si erreur 401 (Non autorisé), déconnecter l'utilisateur
       if (error.status === 401) {
-        authService.logout();
+        authService.clearSession();
         router.navigate(['/login']);
       }
 
       // Relancer l'erreur pour la propagation
       return throwError(() => error);
-    })
+    }),
   );
 };

@@ -1,38 +1,69 @@
-<nav class="top-nav">
-  <a routerLink="/doctors" class="top-nav__link top-nav__link--active">Medecins</a>
-  <a routerLink="/medicines" class="top-nav__link">Medicaments</a>
-  <a routerLink="/reports" class="top-nav__link">Rapports</a>
-</nav>
-
 <section class="crud-layout">
-  <div class="crud-form card">
-    <div class="crud-form__header">
-      <h2>{{ editingId() ? 'Modifier un medecin' : 'Nouveau medecin' }}</h2>
-      <button class="ghost-btn" (click)="startCreate()">Nouveau</button>
+  @if (!readonlyMode()) {
+    <div class="crud-form card">
+      <div class="crud-form__header">
+        <h2>{{ editingId() ? 'Modifier un medecin' : 'Nouveau medecin' }}</h2>
+        <button class="ghost-btn" (click)="startCreate()">Nouveau</button>
+      </div>
+
+      <div class="form-grid">
+        <input
+          class="input"
+          placeholder="Nom"
+          [value]="form().nom"
+          (input)="updateFormField('nom', $any($event.target).value)"
+        />
+        <input
+          class="input"
+          placeholder="Prenom"
+          [value]="form().prenom"
+          (input)="updateFormField('prenom', $any($event.target).value)"
+        />
+        <input
+          class="input"
+          placeholder="Adresse"
+          [value]="form().adresse"
+          (input)="updateFormField('adresse', $any($event.target).value)"
+        />
+        <input
+          class="input"
+          placeholder="Telephone"
+          [value]="form().tel"
+          (input)="updateFormField('tel', $any($event.target).value)"
+        />
+        <input
+          class="input"
+          placeholder="Specialite"
+          [value]="form().specialitecomplementaire"
+          (input)="updateFormField('specialitecomplementaire', $any($event.target).value)"
+        />
+        <input
+          class="input"
+          type="number"
+          placeholder="Departement"
+          [value]="form().departement"
+          (input)="updateDepartement($any($event.target).value)"
+        />
+      </div>
+
+      <button class="primary-btn" [disabled]="isSubmitting()" (click)="saveDoctor()">
+        {{ editingId() ? 'Enregistrer' : 'Creer' }}
+      </button>
+
+      @if (errorMessage()) {
+        <p class="feedback feedback--error">{{ errorMessage() }}</p>
+      }
+      @if (successMessage()) {
+        <p class="feedback feedback--success">{{ successMessage() }}</p>
+      }
     </div>
-
-    <div class="form-grid">
-      <input class="input" placeholder="Nom" [value]="form().nom" (input)="updateFormField('nom', $any($event.target).value)" />
-      <input class="input" placeholder="Prenom" [value]="form().prenom" (input)="updateFormField('prenom', $any($event.target).value)" />
-      <input class="input" placeholder="Adresse" [value]="form().adresse" (input)="updateFormField('adresse', $any($event.target).value)" />
-      <input class="input" placeholder="Telephone" [value]="form().tel" (input)="updateFormField('tel', $any($event.target).value)" />
-      <input class="input" placeholder="Specialite" [value]="form().specialitecomplementaire" (input)="updateFormField('specialitecomplementaire', $any($event.target).value)" />
-      <input class="input" type="number" placeholder="Departement" [value]="form().departement" (input)="updateDepartement($any($event.target).value)" />
-    </div>
-
-    <button class="primary-btn" [disabled]="isSubmitting()" (click)="saveDoctor()">
-      {{ editingId() ? 'Enregistrer' : 'Creer' }}
-    </button>
-
-    @if (errorMessage()) {
-      <p class="feedback feedback--error">{{ errorMessage() }}</p>
-    }
-    @if (successMessage()) {
-      <p class="feedback feedback--success">{{ successMessage() }}</p>
-    }
-  </div>
+  }
 
   <div class="crud-list">
+    @if (readonlyMode()) {
+      <p class="feedback feedback--info">Mode visiteur: consultation uniquement.</p>
+    }
+
     <p class="meta">{{ filteredDoctors().length }} medecins affiches</p>
     <div class="doctors-search">
       <input
@@ -51,10 +82,12 @@
           <p>{{ doctor.speciality || 'Sans specialite' }}</p>
           <p>{{ doctor.address }}</p>
           <p>{{ doctor.phone }}</p>
-          <div class="actions">
-            <button class="ghost-btn" (click)="startEdit(doctor)">Modifier</button>
-            <button class="danger-btn" (click)="deleteDoctor(doctor.id)">Supprimer</button>
-          </div>
+          @if (!readonlyMode()) {
+            <div class="actions">
+              <button class="ghost-btn" (click)="startEdit(doctor)">Modifier</button>
+              <button class="danger-btn" (click)="deleteDoctor(doctor.id)">Supprimer</button>
+            </div>
+          }
         </article>
       }
     </section>

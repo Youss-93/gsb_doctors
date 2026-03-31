@@ -3,15 +3,16 @@
  * Contient le ticket d'authentification
  */
 export interface AuthTicket {
-  ticket: string;      // Token d'authentification
-  userId: string;      // Identifiant de l'utilisateur
-  username: string;    // Nom d'utilisateur
+  ticket: string; // Token d'authentification
+  userId: string; // Identifiant de l'utilisateur
+  username: string; // Nom d'utilisateur
+  role: 'admin' | 'visitor';
 }
 
 /**
  * Informations de connexion envoyées à l'API
  */
 export interface LoginCredentials {
-  login: string;       // Nom d'utilisateur
-  password: string;    // Mot de passe
+  login: string; // Nom d'utilisateur
+  password: string; // Mot de passe
 }

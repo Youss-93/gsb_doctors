@@ -1,38 +1,70 @@
-<nav class="top-nav">
-  <a routerLink="/doctors" class="top-nav__link">Medecins</a>
-  <a routerLink="/medicines" class="top-nav__link">Medicaments</a>
-  <a routerLink="/reports" class="top-nav__link top-nav__link--active">Rapports</a>
-</nav>
-
 <section class="crud-layout">
-  <div class="crud-form card">
-    <div class="crud-form__header">
-      <h2>{{ editingId() ? 'Modifier un rapport' : 'Nouveau rapport' }}</h2>
-      <button class="ghost-btn" (click)="startCreate()">Nouveau</button>
+  @if (!readonlyMode()) {
+    <div class="crud-form card">
+      <div class="crud-form__header">
+        <h2>{{ editingId() ? 'Modifier un rapport' : 'Nouveau rapport' }}</h2>
+        <button class="ghost-btn" (click)="startCreate()">Nouveau</button>
+      </div>
+
+      <div class="form-grid">
+        <input
+          class="input"
+          type="date"
+          [value]="form().date"
+          (input)="updateTextField('date', $any($event.target).value)"
+        />
+        <input
+          class="input"
+          type="number"
+          placeholder="Id medecin"
+          [value]="form().doctorId"
+          (input)="updateNumberField('doctorId', $any($event.target).value)"
+        />
+        <input
+          class="input"
+          placeholder="Code medicament"
+          [value]="form().medicineId"
+          (input)="updateTextField('medicineId', $any($event.target).value)"
+        />
+        <input
+          class="input"
+          type="number"
+          placeholder="Quantite"
+          [value]="form().quantity"
+          (input)="updateNumberField('quantity', $any($event.target).value)"
+        />
+        <textarea
+          class="input"
+          placeholder="Motif"
+          [value]="form().motive"
+          (input)="updateTextField('motive', $any($event.target).value)"
+        ></textarea>
+        <textarea
+          class="input"
+          placeholder="Bilan"
+          [value]="form().balanceSheet"
+          (input)="updateTextField('balanceSheet', $any($event.target).value)"
+        ></textarea>
+      </div>
+
+      <button class="primary-btn" [disabled]="isSubmitting()" (click)="saveReport()">
+        {{ editingId() ? 'Enregistrer' : 'Creer' }}
+      </button>
+
+      @if (errorMessage()) {
+        <p class="feedback feedback--error">{{ errorMessage() }}</p>
+      }
+      @if (successMessage()) {
+        <p class="feedback feedback--success">{{ successMessage() }}</p>
+      }
     </div>
-
-    <div class="form-grid">
-      <input class="input" type="date" [value]="form().date" (input)="updateTextField('date', $any($event.target).value)" />
-      <input class="input" type="number" placeholder="Id medecin" [value]="form().doctorId" (input)="updateNumberField('doctorId', $any($event.target).value)" />
-      <input class="input" placeholder="Code medicament" [value]="form().medicineId" (input)="updateTextField('medicineId', $any($event.target).value)" />
-      <input class="input" type="number" placeholder="Quantite" [value]="form().quantity" (input)="updateNumberField('quantity', $any($event.target).value)" />
-      <textarea class="input" placeholder="Motif" [value]="form().motive" (input)="updateTextField('motive', $any($event.target).value)"></textarea>
-      <textarea class="input" placeholder="Bilan" [value]="form().balanceSheet" (input)="updateTextField('balanceSheet', $any($event.target).value)"></textarea>
-    </div>
-
-    <button class="primary-btn" [disabled]="isSubmitting()" (click)="saveReport()">
-      {{ editingId() ? 'Enregistrer' : 'Creer' }}
-    </button>
-
-    @if (errorMessage()) {
-      <p class="feedback feedback--error">{{ errorMessage() }}</p>
-    }
-    @if (successMessage()) {
-      <p class="feedback feedback--success">{{ successMessage() }}</p>
-    }
-  </div>
+  }
 
   <div class="crud-list">
+    @if (readonlyMode()) {
+      <p class="feedback feedback--info">Mode visiteur: consultation uniquement.</p>
+    }
+
     <p class="meta">{{ filteredReports().length }} rapports affiches</p>
 
     <div class="search-box">
@@ -54,10 +86,12 @@
           </div>
           <p class="item__line"><strong>Motif:</strong> {{ report.motive }}</p>
           <p class="item__line"><strong>Bilan:</strong> {{ report.balanceSheet }}</p>
-          <div class="actions">
-            <button class="ghost-btn" (click)="startEdit(report)">Modifier</button>
-            <button class="danger-btn" (click)="deleteReport(report.id)">Supprimer</button>
-          </div>
+          @if (!readonlyMode()) {
+            <div class="actions">
+              <button class="ghost-btn" (click)="startEdit(report)">Modifier</button>
+              <button class="danger-btn" (click)="deleteReport(report.id)">Supprimer</button>
+            </div>
+          }
         </article>
       }
     </section>

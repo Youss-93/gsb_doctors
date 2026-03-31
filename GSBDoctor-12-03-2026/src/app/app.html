@@ -1,2 +1,30 @@
+<div class="app-shell">
+  @if (authService.isAuthenticated()) {
+    <header class="shell-header">
+      <div class="shell-header__brand">
+        <p class="shell-header__label">GSBDoctor</p>
+        <h1 class="shell-header__title">Portail de visite medicale</h1>
+      </div>
 
-<router-outlet></router-outlet>
+      <nav class="shell-header__nav" aria-label="Navigation principale">
+        <a routerLink="/doctors" routerLinkActive="is-active" class="shell-link">Medecins</a>
+        <a routerLink="/medicines" routerLinkActive="is-active" class="shell-link">Medicaments</a>
+        <a routerLink="/reports" routerLinkActive="is-active" class="shell-link">Rapports</a>
+      </nav>
+
+      <div class="shell-header__actions">
+        <p class="shell-user">
+          {{ authService.currentUser() }}
+          <span class="shell-user__role">{{
+            authService.currentRole() === 'admin' ? 'ADMIN' : 'VISITEUR'
+          }}</span>
+        </p>
+        <button type="button" class="shell-logout" (click)="logout()">Se deconnecter</button>
+      </div>
+    </header>
+  }
+
+  <main class="shell-main">
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -4,32 +4,37 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background:
+    radial-gradient(circle at 12% 12%, rgba(242, 168, 91, 0.2), transparent 28%),
+    radial-gradient(circle at 84% 84%, rgba(10, 55, 87, 0.2), transparent 34%),
+    linear-gradient(145deg, #f7f4ec 0%, #edf2f6 100%);
   padding: 20px;
 }
 
 /* Element : card */
 .login__card {
-  background: white;
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.92);
+  padding: 36px;
+  border-radius: 20px;
+  border: 1px solid rgba(10, 55, 87, 0.12);
+  box-shadow: 0 28px 60px rgba(10, 55, 87, 0.15);
   width: 100%;
-  max-width: 400px;
+  max-width: 430px;
 }
 
 /* Element : title */
 .login__title {
   text-align: center;
-  color: #333;
+  color: #0a3757;
   margin-bottom: 10px;
-  font-size: 28px;
+  font-size: 30px;
+  line-height: 1.2;
 }
 
 /* Element : subtitle */
 .login__subtitle {
   text-align: center;
-  color: #666;
+  color: #4a6173;
   margin-bottom: 30px;
   font-size: 14px;
 }
@@ -49,8 +54,8 @@
 .login__label {
   display: block;
   margin-bottom: 8px;
-  color: #333;
-  font-weight: 500;
+  color: #0f2f45;
+  font-weight: 600;
   font-size: 14px;
 }
 
@@ -58,25 +63,29 @@
 .login__input {
   width: 100%;
   padding: 12px 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  border: 1px solid #c3d1dd;
+  border-radius: 10px;
   font-size: 14px;
-  transition: border-color 0.3s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   box-sizing: border-box;
+  background: #fbfdff;
 }
 
 .login__input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #0a7896;
+  box-shadow: 0 0 0 3px rgba(10, 120, 150, 0.16);
 }
 
 .login__input::placeholder {
-  color: #aaa;
+  color: #7f93a4;
 }
 
 /* Indication visuelle pour aria-invalid */
-.login__input[aria-invalid="true"] {
-  border-color: #c00;
+.login__input[aria-invalid='true'] {
+  border-color: #b33a2e;
 }
 
 /* Element : alert */
@@ -89,32 +98,35 @@
 
 /* Modifier : alert--error */
 .login__alert--error {
-  background-color: #fee;
-  color: #c00;
-  border: 1px solid #fcc;
+  background-color: #fff0ed;
+  color: #a12a1c;
+  border: 1px solid #f0b5ad;
 }
 
 /* Element : button */
 .login__button {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0a3757 0%, #0a7896 100%);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    opacity 0.2s;
 }
 
-.login__button:hover:not([aria-disabled="true"]) {
+.login__button:hover:not([aria-disabled='true']) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 14px 28px rgba(10, 55, 87, 0.28);
 }
 
 /* Modifier : button--loading */
-.login__button[aria-disabled="true"],
+.login__button[aria-disabled='true'],
 .login__button--loading {
   opacity: 0.6;
   cursor: not-allowed;
@@ -122,43 +134,11 @@
 
 /* Indication visuelle du focus (accessibilité) */
 .login__button:focus-visible {
-  outline: 3px solid #667eea;
+  outline: 3px solid rgba(10, 120, 150, 0.45);
   outline-offset: 2px;
 }
 
 /* Element : button-text */
 .login__button-text {
   display: inline-block;
-}
-
-/* Element : test-info */
-.login__test-info {
-  margin-top: 30px;
-  padding: 20px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  border-left: 4px solid #667eea;
-}
-
-/* Element : test-info-title */
-.login__test-info-title {
-  margin: 0 0 10px 0;
-  font-size: 13px;
-  color: #555;
-}
-
-/* Element : test-info-item */
-.login__test-info-item {
-  margin: 5px 0;
-  font-size: 13px;
-  color: #555;
-}
-
-/* Element : code */
-.login__code {
-  background-color: #e9ecef;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: 'Courier New', monospace;
-  color: #764ba2;
 }

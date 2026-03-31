@@ -4,19 +4,21 @@ import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ReportsService, ReportPayload } from '../../services/reports.service';
 import { VisitReport } from '../../types/report.interface';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-reports-page',
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './reports-page.html',
-  styleUrl: './reports-page.css'
+  styleUrl: './reports-page.css',
 })
 export class ReportsPageComponent {
   private reportsService = inject(ReportsService);
+  private authService = inject(AuthService);
 
   reports = toSignal(this.reportsService.getReports(), {
-    initialValue: [] as VisitReport[]
+    initialValue: [] as VisitReport[],
   });
 
   searchTerm = signal('');
@@ -24,6 +26,7 @@ export class ReportsPageComponent {
   successMessage = signal('');
   isSubmitting = signal(false);
   editingId = signal<number | null>(null);
+  readonlyMode = computed(() => !this.authService.isAdmin());
 
   form = signal({
     motive: '',
@@ -31,7 +34,7 @@ export class ReportsPageComponent {
     doctorId: 1,
     date: new Date().toISOString().slice(0, 10),
     medicineId: '3MYC7',
-    quantity: 1
+    quantity: 1,
   });
 
   filteredReports = computed(() => {
@@ -41,7 +44,7 @@ export class ReportsPageComponent {
     if (!term) return rows;
 
     return rows.filter((r) =>
-      [String(r.id), r.date, r.motive, r.balanceSheet].join(' ').toLowerCase().includes(term)
+      [String(r.id), r.date, r.motive, r.balanceSheet].join(' ').toLowerCase().includes(term),
     );
   });
 
@@ -57,17 +60,25 @@ export class ReportsPageComponent {
       doctorId: 1,
       date: new Date().toISOString().slice(0, 10),
       medicineId: '3MYC7',
-      quantity: 1
+      quantity: 1,
     });
     this.editingId.set(null);
   }
 
   startCreate(): void {
+    if (this.readonlyMode()) {
+      return;
+    }
+
     this.clearMessages();
     this.resetForm();
   }
 
   startEdit(report: VisitReport): void {
+    if (this.readonlyMode()) {
+      return;
+    }
+
     this.clearMessages();
     this.editingId.set(report.id);
     this.form.set({
@@ -76,25 +87,30 @@ export class ReportsPageComponent {
       doctorId: 1,
       date: report.date,
       medicineId: '3MYC7',
-      quantity: 1
+      quantity: 1,
     });
   }
 
   updateTextField(field: 'motive' | 'balanceSheet' | 'date' | 'medicineId', value: string): void {
     this.form.update((current) => ({
       ...current,
-      [field]: value
+      [field]: value,
     }));
   }
 
   updateNumberField(field: 'doctorId' | 'quantity', value: string): void {
     this.form.update((current) => ({
       ...current,
-      [field]: Number(value) || 0
+      [field]: Number(value) || 0,
     }));
   }
 
   saveReport(): void {
+    if (this.readonlyMode()) {
+      this.errorMessage.set('Mode lecture seule: action reservee aux administrateurs.');
+      return;
+    }
+
     this.clearMessages();
     this.isSubmitting.set(true);
 
@@ -104,7 +120,7 @@ export class ReportsPageComponent {
       doctorId: Number(this.form().doctorId),
       date: this.form().date,
       medicineId: this.form().medicineId.trim(),
-      quantity: Number(this.form().quantity)
+      quantity: Number(this.form().quantity),
     };
 
     if (!payload.motive || !payload.balanceSheet || !payload.medicineId || !payload.date) {
@@ -122,29 +138,34 @@ export class ReportsPageComponent {
         this.successMessage.set(this.editingId() ? 'Rapport modifie.' : 'Rapport cree.');
         this.resetForm();
         this.reports = toSignal(this.reportsService.getReports(), {
-          initialValue: [] as VisitReport[]
+          initialValue: [] as VisitReport[],
         });
         this.isSubmitting.set(false);
       },
       error: () => {
         this.errorMessage.set('Operation impossible. Verifie tes donnees.');
         this.isSubmitting.set(false);
-      }
+      },
     });
   }
 
   deleteReport(id: number): void {
+    if (this.readonlyMode()) {
+      this.errorMessage.set('Mode lecture seule: action reservee aux administrateurs.');
+      return;
+    }
+
     this.clearMessages();
     this.reportsService.deleteReport(id).subscribe({
       next: () => {
         this.successMessage.set('Rapport supprime.');
         this.reports = toSignal(this.reportsService.getReports(), {
-          initialValue: [] as VisitReport[]
+          initialValue: [] as VisitReport[],
         });
       },
       error: () => {
         this.errorMessage.set('Suppression impossible.');
-      }
+      },
     });
   }
 }

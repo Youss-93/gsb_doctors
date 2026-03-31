@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DoctorsService, DoctorPayload } from '../../services/doctors.service';
 import { Doctor } from '../../types/doctor.interface';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-doctors-page',
@@ -14,6 +15,7 @@ import { Doctor } from '../../types/doctor.interface';
 })
 export class DoctorsPageComponent {
   private doctorsService = inject(DoctorsService);
+  private authService = inject(AuthService);
 
   doctors = toSignal(this.doctorsService.getDoctors(), {
     initialValue: [] as Doctor[],
@@ -25,6 +27,7 @@ export class DoctorsPageComponent {
   successMessage = signal('');
   isSubmitting = signal(false);
   editingId = signal<number | null>(null);
+  readonlyMode = computed(() => !this.authService.isAdmin());
 
   form = signal({
     nom: '',
@@ -32,7 +35,7 @@ export class DoctorsPageComponent {
     adresse: '',
     tel: '',
     specialitecomplementaire: '',
-    departement: 75
+    departement: 75,
   });
 
   // Computed filtered doctors based on the search term
@@ -63,17 +66,25 @@ export class DoctorsPageComponent {
       adresse: '',
       tel: '',
       specialitecomplementaire: '',
-      departement: 75
+      departement: 75,
     });
     this.editingId.set(null);
   }
 
   startCreate(): void {
+    if (this.readonlyMode()) {
+      return;
+    }
+
     this.clearMessages();
     this.resetForm();
   }
 
   startEdit(doctor: Doctor): void {
+    if (this.readonlyMode()) {
+      return;
+    }
+
     this.clearMessages();
     this.editingId.set(doctor.id);
     this.form.set({
@@ -82,25 +93,33 @@ export class DoctorsPageComponent {
       adresse: doctor.address,
       tel: doctor.phone || '',
       specialitecomplementaire: doctor.speciality || '',
-      departement: doctor.department || 75
+      departement: doctor.department || 75,
     });
   }
 
-  updateFormField(field: 'nom' | 'prenom' | 'adresse' | 'tel' | 'specialitecomplementaire', value: string): void {
+  updateFormField(
+    field: 'nom' | 'prenom' | 'adresse' | 'tel' | 'specialitecomplementaire',
+    value: string,
+  ): void {
     this.form.update((current) => ({
       ...current,
-      [field]: value
+      [field]: value,
     }));
   }
 
   updateDepartement(value: string): void {
     this.form.update((current) => ({
       ...current,
-      departement: Number(value) || 0
+      departement: Number(value) || 0,
     }));
   }
 
   saveDoctor(): void {
+    if (this.readonlyMode()) {
+      this.errorMessage.set('Mode lecture seule: action reservee aux administrateurs.');
+      return;
+    }
+
     this.clearMessages();
     this.isSubmitting.set(true);
 
@@ -110,7 +129,7 @@ export class DoctorsPageComponent {
       adresse: this.form().adresse.trim(),
       tel: this.form().tel.trim(),
       specialitecomplementaire: this.form().specialitecomplementaire.trim(),
-      departement: Number(this.form().departement)
+      departement: Number(this.form().departement),
     };
 
     if (!payload.nom || !payload.prenom || !payload.adresse || !payload.departement) {
@@ -128,29 +147,34 @@ export class DoctorsPageComponent {
         this.successMessage.set(this.editingId() ? 'Medecin modifie.' : 'Medecin cree.');
         this.resetForm();
         this.doctors = toSignal(this.doctorsService.getDoctors(), {
-          initialValue: [] as Doctor[]
+          initialValue: [] as Doctor[],
         });
         this.isSubmitting.set(false);
       },
       error: () => {
         this.errorMessage.set('Operation impossible. Verifie les champs puis reessaie.');
         this.isSubmitting.set(false);
-      }
+      },
     });
   }
 
   deleteDoctor(id: number): void {
+    if (this.readonlyMode()) {
+      this.errorMessage.set('Mode lecture seule: action reservee aux administrateurs.');
+      return;
+    }
+
     this.clearMessages();
     this.doctorsService.deleteDoctor(id).subscribe({
       next: () => {
         this.successMessage.set('Medecin supprime.');
         this.doctors = toSignal(this.doctorsService.getDoctors(), {
-          initialValue: [] as Doctor[]
+          initialValue: [] as Doctor[],
         });
       },
       error: () => {
         this.errorMessage.set('Suppression impossible (peut-etre liee a des rapports).');
-      }
+      },
     });
   }
 }
