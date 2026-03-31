@@ -1,0 +1,64 @@
+<nav class="top-nav">
+  <a routerLink="/doctors" class="top-nav__link">Medecins</a>
+  <a routerLink="/medicines" class="top-nav__link top-nav__link--active">Medicaments</a>
+  <a routerLink="/reports" class="top-nav__link">Rapports</a>
+</nav>
+
+<section class="crud-layout">
+  <div class="crud-form card">
+    <div class="crud-form__header">
+      <h2>{{ editingId() ? 'Modifier un medicament' : 'Nouveau medicament' }}</h2>
+      <button class="ghost-btn" (click)="startCreate()">Nouveau</button>
+    </div>
+
+    <div class="form-grid">
+      <input class="input" placeholder="Code medicament (ex: ZZNEW1)" [value]="form().id" (input)="updateFormField('id', $any($event.target).value)" [disabled]="editingId() !== null" />
+      <input class="input" placeholder="Nom commercial" [value]="form().businessName" (input)="updateFormField('businessName', $any($event.target).value)" />
+      <input class="input" placeholder="Code famille (ex: AA)" [value]="form().familyCode" (input)="updateFormField('familyCode', $any($event.target).value)" />
+      <textarea class="input" placeholder="Composition" [value]="form().composition" (input)="updateFormField('composition', $any($event.target).value)"></textarea>
+      <textarea class="input" placeholder="Effets" [value]="form().effects" (input)="updateFormField('effects', $any($event.target).value)"></textarea>
+      <textarea class="input" placeholder="Contre-indications" [value]="form().againstIndications" (input)="updateFormField('againstIndications', $any($event.target).value)"></textarea>
+    </div>
+
+    <button class="primary-btn" [disabled]="isSubmitting()" (click)="saveMedicine()">
+      {{ editingId() ? 'Enregistrer' : 'Creer' }}
+    </button>
+
+    @if (errorMessage()) {
+      <p class="feedback feedback--error">{{ errorMessage() }}</p>
+    }
+    @if (successMessage()) {
+      <p class="feedback feedback--success">{{ successMessage() }}</p>
+    }
+  </div>
+
+  <div class="crud-list">
+    <p class="meta">{{ filteredMedicines().length }} medicaments affiches</p>
+
+    <div class="search-box">
+      <input
+        class="search-input"
+        type="search"
+        placeholder="Rechercher par nom commercial, famille, composition..."
+        [value]="searchTerm()"
+        (input)="searchTerm.set($any($event.target).value)"
+      />
+    </div>
+
+    <section class="grid">
+      @for (medicine of filteredMedicines(); track medicine.id) {
+        <article class="card">
+          <h3 class="card__title">{{ medicine.businessName }}</h3>
+          <p class="card__meta">{{ medicine.id }} | {{ medicine.family }}</p>
+          <p class="card__line"><strong>Composition:</strong> {{ medicine.composition }}</p>
+          <p class="card__line"><strong>Effets:</strong> {{ medicine.effects }}</p>
+          <p class="card__line"><strong>Contre-indications:</strong> {{ medicine.againstIndications }}</p>
+          <div class="actions">
+            <button class="ghost-btn" (click)="startEdit(medicine)">Modifier</button>
+            <button class="danger-btn" (click)="deleteMedicine(medicine.id)">Supprimer</button>
+          </div>
+        </article>
+      }
+    </section>
+  </div>
+</section>
