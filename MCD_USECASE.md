@@ -1,170 +1,97 @@
 # GSBDoctor - Modèle Conceptuel de Données (MCD) et Use Cases
 
-## Annexe 1: MCD (Modèle Conceptuel de Données / Diagramme de Classes UML)
+## Annexe 1: MCD (Modele Conceptuel de Donnees)
 
-### Diagramme textuel du MCD
+### Entites et attributs (conformes au schema fourni)
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                         MODÈLE CONCEPTUEL                                │
-└─────────────────────────────────────────────────────────────────────────┘
+#### VISITEUR
 
-                             ┌──────────────────┐
-                             │    VISITEUR      │
-                             │  (Utilisateur)   │
-                             ├──────────────────┤
-                             │ *IdVisiteur (PK) │
-                             │ Login            │
-                             │ Password         │
-                             │ Firstname        │
-                             │ Lastname         │
-                             │ Role             │
-                             └────────┬─────────┘
-                                      │
-                                      │ 1,n
-                                      │ Créer
-                                      │
-                    ┌─────────────────┴──────────────────┐
-                    │                                    │
-                    │ 0,n Écrire                         │
-                    │                                    │
-          ┌─────────▼────────────┐          ┌──────────▼──────────┐
-          │     RAPPORT          │          │   MEDECIN           │
-          ├─────────────────────┤          ├─────────────────────┤
-          │ *IdRapport (PK)     │          │ *IdMedecin (PK)     │
-          │ Date                │          │ Nom                 │
-          │ Motif               │          │ Prenom              │
-          │ BalanceSheet        │          │ Adresse             │
-          │ IdMedicament (FK)   │          │ Tel                 │
-          │ IdMedecin (FK)      │          │ Specialite          │
-          │ Quantity            │          │ Departement         │
-          │ CreatedBy (FK)      │          │ Photo (optionnel)   │
-          └──────────┬──────────┘          └─────────────────────┘
-                     │
-                     │ 0,n
-                     │ Concerner
-                     │
-          ┌──────────▼────────────────┐
-          │    MEDICAMENT             │
-          ├───────────────────────────┤
-          │ *IdMedicament (PK)        │
-          │ NomCommercial             │
-          │ IdFamille (FK)            │
-          │ Composition               │
-          │ Effets                    │
-          │ ContreIndications         │
-          │ PrixUnitaire (optionnel)  │
-          └──────────┬────────────────┘
-                     │
-                     │ 0,n
-                     │ Appartenir
-                     │
-          ┌──────────▼────────────────┐
-          │      FAMILLE              │
-          ├───────────────────────────┤
-          │ *IdFamille (PK)           │
-          │ NomFamille                │
-          │ Description               │
-          └───────────────────────────┘
+| Attribut     |
+| ------------ |
+| id_Visiteurs |
+| Login        |
+| Mdp          |
+| Nom          |
+| Prenom       |
+| AdressePost  |
+| CodePostale  |
+| Ville        |
+| dateEmbauche |
 
+#### RAPPORT
 
-                  ┌─────────────────────────────┐
-                  │    PERIODE (optionnel)      │
-                  ├─────────────────────────────┤
-                  │ *IdPeriode (PK)             │
-                  │ DateDebut                   │
-                  │ DateFin                     │
-                  │ Libelle                     │
-                  └─────────────────────────────┘
-```
+| Attribut    |
+| ----------- |
+| id_Rapport  |
+| dateRapport |
+| Motif       |
+| Bilan       |
 
-### Description des entités
+#### MEDECIN
 
-#### VISITEUR (Utilisateur)
-| Attribut | Type | Contrainte | Description |
-|----------|------|-----------|-------------|
-| IdVisiteur | INT | PK | Identifiant unique |
-| Login | VARCHAR(50) | UNIQUE, NOT NULL | Identifiant de connexion |
-| Password | VARCHAR(255) | NOT NULL | Mot de passe hashé |
-| Firstname | VARCHAR(100) | NOT NULL | Prénom |
-| Lastname | VARCHAR(100) | NOT NULL | Nom |
-| Role | ENUM | NOT NULL | 'ADMIN', 'USER' |
-| CreatedAt | DATETIME | DEFAULT NOW | Date création |
-| UpdatedAt | DATETIME | DEFAULT NOW | Date modification |
+| Attribut          |
+| ----------------- |
+| id_Medecin        |
+| Nom               |
+| Prenom            |
+| AdressePostale    |
+| SpeComplementaire |
+| NumTel            |
+| Departement       |
 
-#### MEDECIN (Docteur)
-| Attribut | Type | Contrainte | Description |
-|----------|------|-----------|-------------|
-| IdMedecin | INT | PK | Identifiant unique |
-| Nom | VARCHAR(100) | NOT NULL | Nom du médecin |
-| Prenom | VARCHAR(100) | NOT NULL | Prénom du médecin |
-| Adresse | TEXT | NOT NULL | Adresse complète |
-| Tel | VARCHAR(20) | NOT NULL | Téléphone |
-| Specialite | VARCHAR(100) | | Spécialité médicale |
-| Departement | INT | NOT NULL | Numéro département |
-| Photo | VARCHAR(255) | | URL photo (optionnel) |
-| CreatedAt | DATETIME | DEFAULT NOW | |
-| UpdatedAt | DATETIME | DEFAULT NOW | |
+#### MEDICAMENT
 
-#### RAPPORT (Visite Médicale)
-| Attribut | Type | Contrainte | Description |
-|----------|------|-----------|-------------|
-| IdRapport | INT | PK | Identifiant unique |
-| Date | DATE | NOT NULL | Date de la visite |
-| Motif | TEXT | NOT NULL | Motif de la visite |
-| BalanceSheet | TEXT | NOT NULL | Bilan/Résultats |
-| IdMedecin | INT | FK → MEDECIN | Médecin consulté |
-| IdMedicament | VARCHAR(10) | FK → MEDICAMENT | Médicament prescrit |
-| Quantity | INT | NOT NULL | Quantité prescrite |
-| CreatedBy | INT | FK → VISITEUR | Auteur du rapport |
-| CreatedAt | DATETIME | DEFAULT NOW | |
-| UpdatedAt | DATETIME | DEFAULT NOW | |
+| Attribut          |
+| ----------------- |
+| id_Medicament     |
+| nomCommercial     |
+| Composition       |
+| Effets            |
+| contreIndications |
 
-#### MEDICAMENT (Remède/Produit)
-| Attribut | Type | Contrainte | Description |
-|----------|------|-----------|-------------|
-| IdMedicament | VARCHAR(10) | PK | Code unique (ex: 3MYC7) |
-| NomCommercial | VARCHAR(150) | NOT NULL | Nom du produit |
-| IdFamille | VARCHAR(3) | FK → FAMILLE | Code famille |
-| Composition | TEXT | NOT NULL | Composition chimique |
-| Effets | TEXT | NOT NULL | Effets thérapeutiques |
-| ContreIndications | TEXT | NOT NULL | Contre-indications |
-| PrixUnitaire | DECIMAL(10,2) | | Prix unitaire (optionnel) |
-| CreatedAt | DATETIME | DEFAULT NOW | |
-| UpdatedAt | DATETIME | DEFAULT NOW | |
+#### FAMILLE
 
-#### FAMILLE (Catégorie de Médicaments)
-| Attribut | Type | Contrainte | Description |
-|----------|------|-----------|-------------|
-| IdFamille | VARCHAR(3) | PK | Code famille (ex: ANA) |
-| NomFamille | VARCHAR(100) | NOT NULL | Nom de la famille |
-| Description | TEXT | | Description |
+| Attribut   |
+| ---------- |
+| id_Famille |
+| Libelle    |
 
-#### PERIODE (Optionnel - pour historique)
-| Attribut | Type | Contrainte | Description |
-|----------|------|-----------|-------------|
-| IdPeriode | INT | PK | Identifiant unique |
-| DateDebut | DATE | NOT NULL | Date début |
-| DateFin | DATE | NOT NULL | Date fin |
-| Libelle | VARCHAR(50) | NOT NULL | Nom (ex: "Mars 2026") |
+### Associations et cardinalites
 
-### Cardinalités et Associations
+#### Rediger
 
-```
-VISITEUR (1) ──créer(0,n)──> RAPPORT
-             ──(1,n)
+- Entre VISITEUR et RAPPORT
+- Cardinalites: VISITEUR (0,n) - RAPPORT (1,1)
 
-MEDECIN (1) <──concerner(0,n)── RAPPORT
-            ──(0,n)
+#### Concerner
 
-MEDICAMENT (1) <──utiliser(0,n)── RAPPORT
-               ──(0,n)
+- Entre RAPPORT et MEDECIN
+- Cardinalites: RAPPORT (1,1) - MEDECIN (1,n)
 
-MEDICAMENT (n) ──appartenir──> (1) FAMILLE
-              ──(0,n)        ──(0,n)
+#### Offrir
 
-RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
-           ──(0,n)              ──(0,n)
+- Entre RAPPORT et MEDICAMENT
+- Attribut d'association: quantite
+- Cardinalites: RAPPORT (0,n) - MEDICAMENT (0,n)
+
+#### Appartenir
+
+- Entre MEDICAMENT et FAMILLE
+- Cardinalites: MEDICAMENT (1,1) - FAMILLE (0,n)
+
+### Representation textuelle compacte
+
+```text
+VISITEUR(id_Visiteurs, Login, Mdp, Nom, Prenom, AdressePost, CodePostale, Ville, dateEmbauche)
+RAPPORT(id_Rapport, dateRapport, Motif, Bilan)
+MEDECIN(id_Medecin, Nom, Prenom, AdressePostale, SpeComplementaire, NumTel, Departement)
+MEDICAMENT(id_Medicament, nomCommercial, Composition, Effets, contreIndications)
+FAMILLE(id_Famille, Libelle)
+
+REDIGER: VISITEUR (0,n) <-> RAPPORT (1,1)
+CONCERNER: RAPPORT (1,1) <-> MEDECIN (1,n)
+OFFRIR(quantite): RAPPORT (0,n) <-> MEDICAMENT (0,n)
+APPARTENIR: MEDICAMENT (1,1) <-> FAMILLE (0,n)
 ```
 
 ---
@@ -270,29 +197,30 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 
 ### Matrice des Cas d'Utilisation par Acteur
 
-| Use Case | Internaute | Utilisateur | Admin |
-|----------|:----------:|:-----------:|:-----:|
-| S'inscrire | ✅ | ❌ | ❌ |
-| Se connecter | ✅ | ❌ | ✅ |
-| Se déconnecter | ❌ | ✅ | ✅ |
-| Consulter médecins | ❌ | ✅ | ✅ |
-| Rechercher médecin | ❌ | ✅ | ✅ |
-| Consulter médicaments | ❌ | ✅ | ✅ |
-| Rechercher médicament | ❌ | ✅ | ✅ |
-| Consulter rapports | ❌ | ✅ | ✅ |
-| Créer rapport | ❌ | ✅ | ✅ |
-| Modifier rapport | ❌ | ✅ (propre) | ✅ (tous) |
-| Supprimer rapport | ❌ | ✅ (propre) | ✅ (tous) |
-| Créer médecin | ❌ | ❌ | ✅ |
-| Modifier médecin | ❌ | ❌ | ✅ |
-| Supprimer médecin | ❌ | ❌ | ✅ |
-| Créer médicament | ❌ | ❌ | ✅ |
-| Modifier médicament | ❌ | ❌ | ✅ |
-| Supprimer médicament | ❌ | ❌ | ✅ |
+| Use Case              | Internaute | Utilisateur |   Admin   |
+| --------------------- | :--------: | :---------: | :-------: |
+| S'inscrire            |     ✅     |     ❌      |    ❌     |
+| Se connecter          |     ✅     |     ❌      |    ✅     |
+| Se déconnecter        |     ❌     |     ✅      |    ✅     |
+| Consulter médecins    |     ❌     |     ✅      |    ✅     |
+| Rechercher médecin    |     ❌     |     ✅      |    ✅     |
+| Consulter médicaments |     ❌     |     ✅      |    ✅     |
+| Rechercher médicament |     ❌     |     ✅      |    ✅     |
+| Consulter rapports    |     ❌     |     ✅      |    ✅     |
+| Créer rapport         |     ❌     |     ✅      |    ✅     |
+| Modifier rapport      |     ❌     | ✅ (propre) | ✅ (tous) |
+| Supprimer rapport     |     ❌     | ✅ (propre) | ✅ (tous) |
+| Créer médecin         |     ❌     |     ❌      |    ✅     |
+| Modifier médecin      |     ❌     |     ❌      |    ✅     |
+| Supprimer médecin     |     ❌     |     ❌      |    ✅     |
+| Créer médicament      |     ❌     |     ❌      |    ✅     |
+| Modifier médicament   |     ❌     |     ❌      |    ✅     |
+| Supprimer médicament  |     ❌     |     ❌      |    ✅     |
 
 ### Description détaillée des Cas d'Utilisation
 
 #### 1. S'inscrire
+
 - **Acteurs**: Internaute
 - **Pré-condition**: N/A
 - **Scénario principal**:
@@ -305,6 +233,7 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 - **Scénario d'erreur**: Login déjà utilisé → Message erreur
 
 #### 2. Se connecter
+
 - **Acteurs**: Internaute, Utilisateur, Admin
 - **Pré-condition**: Compte existant
 - **Scénario principal**:
@@ -319,6 +248,7 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 - **Include**: Authentifier (avec JWT)
 
 #### 3. Se déconnecter
+
 - **Acteurs**: Utilisateur, Admin
 - **Pré-condition**: Connecté
 - **Scénario principal**:
@@ -329,6 +259,7 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 - **Scénario d'erreur**: Token expiré → Redirection automatique /login
 
 #### 4. Consulter les médecins
+
 - **Acteurs**: Utilisateur, Admin
 - **Pré-condition**: Authentifié
 - **Scénario principal**:
@@ -339,6 +270,7 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 - **Cas alternatif**: Lister sans filtre vs avec recherche
 
 #### 5. Rechercher un médecin
+
 - **Acteurs**: Utilisateur, Admin
 - **Pré-condition**: Sur page /doctors
 - **Scénario principal**:
@@ -349,6 +281,7 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 - **Performance**: Recherche côté frontend (Signals Angular)
 
 #### 6. Consulter les médicaments
+
 - **Acteurs**: Utilisateur, Admin
 - **Pré-condition**: Authentifié
 - **Scénario principal**:
@@ -359,6 +292,7 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 - **Include**: Rechercher médicament
 
 #### 7. Rechercher un médicament
+
 - **Acteurs**: Utilisateur, Admin
 - **Pré-condition**: Sur page /medicines
 - **Scénario principal**:
@@ -368,6 +302,7 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 - **Performance**: Recherche côté frontend
 
 #### 8. Consulter les rapports (Authentifié)
+
 - **Acteurs**: Utilisateur, Admin
 - **Pré-condition**: Authentifié + token JWT valide
 - **Scénario principal**:
@@ -379,6 +314,7 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 - **Include**: Authentifier (token requis)
 
 #### 9. Créer un rapport
+
 - **Acteurs**: Utilisateur, Admin
 - **Pré-condition**: Authentifié
 - **Scénario principal**:
@@ -398,6 +334,7 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 - **Scénario d'erreur**: Données manquantes → Message validation
 
 #### 10. Modifier un rapport
+
 - **Acteurs**: Utilisateur (propre rapport), Admin (tous)
 - **Pré-condition**: Rapport existant + Authentifié
 - **Scénario principal**:
@@ -411,6 +348,7 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 - **Include**: Authentifier
 
 #### 11. Supprimer un rapport
+
 - **Acteurs**: Utilisateur (propre), Admin (tous)
 - **Pré-condition**: Rapport existant + Authentifié
 - **Scénario principal**:
@@ -423,6 +361,7 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 - **Sécurité**: Vérifier propriété ou rôle admin
 
 #### 12. Créer un médecin (Admin uniquement)
+
 - **Acteurs**: Admin
 - **Pré-condition**: Authentifié + rôle Admin
 - **Scénario principal**:
@@ -436,6 +375,7 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 - **Include**: Authentifier
 
 #### 13. Modifier un médecin (Admin uniquement)
+
 - **Acteurs**: Admin
 - **Pré-condition**: Authentifié + Admin
 - **Scénario principal**:
@@ -446,6 +386,7 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 - **Include**: Authentifier
 
 #### 14. Supprimer un médecin (Admin uniquement)
+
 - **Acteurs**: Admin
 - **Pré-condition**: Authentifié + Admin
 - **Scénario principal**:
@@ -457,6 +398,7 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 - **Include**: Authentifier
 
 #### 15-17. Créer/Modifier/Supprimer un médicament (Admin)
+
 - Identique à médecins, mais sur /medicines
 - Champs: id, nomCommercial, idFamille, composition, effets, contreIndications
 - Contrôle: Admin uniquement
@@ -466,11 +408,13 @@ RAPPORT (n) ──survenir durant──> (1) PERIODE (optionnel)
 ## Résumé
 
 ### MCD
+
 - **5 entités principales**: VISITEUR, MEDECIN, MEDICAMENT, RAPPORT, FAMILLE
 - **Relations 1,n**: bien définies avec cardinalités
 - **Contraintes**: PK, FK, UNIQUE, NOT NULL
 
 ### Use Cases
+
 - **17 cas d'utilisation** couvrant le projet complètement
 - **3 acteurs**: Internaute, Utilisateur, Admin
 - **Include**: Authentification JWT systématique pour les opérations protégées
