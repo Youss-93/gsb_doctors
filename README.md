@@ -198,7 +198,7 @@ SELECT COUNT(*) FROM medecin;  -- Devrait afficher ~1000
 {
   "development": {
     "username": "root",
-    "password": "123456",   // ServBay default
+    "password": "123456", // ServBay default
     "database": "gsbrapports",
     "host": "127.0.0.1",
     "port": 3306,
@@ -258,6 +258,7 @@ npm start
 ```
 
 **Résultat attendu:**
+
 ```
 Express server running on port 3000
 Connected to MySQL database: gsbrapports
@@ -273,6 +274,7 @@ npm start
 ```
 
 **Résultat attendu:**
+
 ```
 Angular app is running at http://localhost:4200
 ...
@@ -313,6 +315,7 @@ Password: aaaa
 ### Routes d'authentification
 
 #### POST /inscription
+
 Créer un nouveau compte
 
 ```bash
@@ -327,10 +330,12 @@ curl -X POST http://localhost:3000/inscription \
 ```
 
 **Règles password:**
+
 - Min 8 caractères
 - 1 majuscule, 1 minuscule, 1 chiffre, 1 caractère spécial
 
 #### POST /connexion
+
 Se connecter
 
 ```bash
@@ -343,6 +348,7 @@ curl -X POST http://localhost:3000/connexion \
 ```
 
 **Réponse:**
+
 ```json
 {
   "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -352,6 +358,7 @@ curl -X POST http://localhost:3000/connexion \
 ```
 
 #### GET /deconnexion
+
 Se déconnecter
 
 ```bash
@@ -362,6 +369,7 @@ curl -X GET http://localhost:3000/deconnexion \
 ### Routes Médecins (GET/POST/PUT/DELETE)
 
 #### GET /medecins
+
 Lister les médecins
 
 ```bash
@@ -376,6 +384,7 @@ curl "http://localhost:3000/medecins?name=Dupont"
 ```
 
 **Réponse:**
+
 ```json
 {
   "medecins": [
@@ -395,6 +404,7 @@ curl "http://localhost:3000/medecins?name=Dupont"
 ```
 
 #### POST /medecins
+
 Créer un médecin
 
 ```bash
@@ -411,6 +421,7 @@ curl -X POST http://localhost:3000/medecins \
 ```
 
 #### PUT /medecins/:id
+
 Modifier un médecin
 
 ```bash
@@ -427,6 +438,7 @@ curl -X PUT http://localhost:3000/medecins/1 \
 ```
 
 #### DELETE /medecins/:id
+
 Supprimer un médecin
 
 ```bash
@@ -436,11 +448,13 @@ curl -X DELETE http://localhost:3000/medecins/1
 ### Routes Médicaments (GET/POST/PUT/DELETE)
 
 #### GET /medicaments
+
 ```bash
 curl http://localhost:3000/medicaments
 ```
 
 #### POST /medicaments
+
 ```bash
 curl -X POST http://localhost:3000/medicaments \
   -H "Content-Type: application/json" \
@@ -455,6 +469,7 @@ curl -X POST http://localhost:3000/medicaments \
 ```
 
 #### PUT /medicaments/:id
+
 ```bash
 curl -X PUT http://localhost:3000/medicaments/3MYC7 \
   -H "Content-Type: application/json" \
@@ -468,6 +483,7 @@ curl -X PUT http://localhost:3000/medicaments/3MYC7 \
 ```
 
 #### DELETE /medicaments/:id
+
 ```bash
 curl -X DELETE http://localhost:3000/medicaments/3MYC7
 ```
@@ -475,12 +491,14 @@ curl -X DELETE http://localhost:3000/medicaments/3MYC7
 ### Routes Rapports (Authentifiées - Nécessite Token)
 
 #### GET /rapports
+
 ```bash
 curl -H "Authorization: Bearer YOUR_TOKEN" \
   http://localhost:3000/rapports?page=1&element=50
 ```
 
 #### POST /rapports
+
 Créer un rapport (nécessite authentification)
 
 ```bash
@@ -498,6 +516,7 @@ curl -X POST http://localhost:3000/rapports \
 ```
 
 #### PUT /rapports/:id
+
 Modifier un rapport (nécessite authentification)
 
 ```bash
@@ -515,6 +534,7 @@ curl -X PUT http://localhost:3000/rapports/1 \
 ```
 
 #### DELETE /rapports/:id
+
 Supprimer un rapport (nécessite authentification)
 
 ```bash
@@ -538,6 +558,7 @@ curl -X DELETE http://localhost:3000/rapports/1 \
 ### Pages de l'application
 
 #### 🔑 Page Connexion (/login)
+
 - Route **publique** (accessible sans authentification)
 - Formulaire simple login/password
 - Stockage du token en localStorage
@@ -545,12 +566,14 @@ curl -X DELETE http://localhost:3000/rapports/1 \
 - Redirection automatique vers /doctors après succès
 
 **Identifiants de test:**
+
 ```
 Login: aribiA
 Password: aaaa
 ```
 
 #### 👨‍⚕️ Page Médecins (/doctors)
+
 - Route **protégée** (nécessite authentification)
 - Affichage de tous les médecins (1000+)
 - **Sidebar gauche** - Formulaire CRUD
@@ -562,6 +585,7 @@ Password: aaaa
 - Messages feedback (succès/erreur)
 
 #### 💊 Page Médicaments (/medicines)
+
 - Route **protégée** (nécessite authentification)
 - Affichage de tous les médicaments (500+)
 - **Sidebar gauche** - Formulaire CRUD
@@ -573,6 +597,7 @@ Password: aaaa
 - Messages feedback
 
 #### 📝 Page Rapports (/reports)
+
 - Route **protégée** (nécessite authentification)
 - Affichage des rapports de visite
 - **Sidebar gauche** - Formulaire CRUD
@@ -614,7 +639,7 @@ npm run ng -- build
    ↓
 2. Redirection automatique → /login (authGuard)
    ↓
-3. Utilisateur entre credentials (aribiA / aaaa)
+3. Utilisateur entre credentials (aribiA / aaaa ou visiteur1 / Visiteur123!)
    ↓
 4. Frontend envoie POST /connexion au backend
    ↓
@@ -684,7 +709,7 @@ private readonly API_URL = 'http://localhost:3000';  // Changer ici
 **Backend:** Éditer `gsb-node-api-samir/app.js`
 
 ```javascript
-const PORT = process.env.PORT || 3000;  // Changer ici
+const PORT = process.env.PORT || 3000; // Changer ici
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
@@ -716,11 +741,13 @@ app.listen(PORT, () => {
 ### Backend Controllers
 
 #### authController.js
+
 - `signup()` - POST /inscription (créer compte)
 - `login()` - POST /connexion (authentifier)
 - `logout()` - GET /deconnexion (déconnecter)
 
 #### medecinController.js
+
 - `getDoctors()` - List médecins (paginated)
 - `getDoctorById()` - Get un médecin
 - `createDoctor()` - POST new médecin
@@ -728,6 +755,7 @@ app.listen(PORT, () => {
 - `deleteDoctor()` - DELETE supprimer médecin
 
 #### medicineController.js
+
 - `getMedicines()` - List médicaments
 - `getMedicineById()` - Get un médicament
 - `createMedicine()` - POST new médicament
@@ -735,6 +763,7 @@ app.listen(PORT, () => {
 - `deleteMedicine()` - DELETE supprimer médicament
 
 #### reportController.js
+
 - `getReports()` - List rapports (auth required)
 - `getReportById()` - Get un rapport
 - `createReport()` - POST new rapport (auth required)
@@ -744,12 +773,14 @@ app.listen(PORT, () => {
 ### Frontend Services
 
 #### auth.ts
+
 - `login()` - Authentifier utilisateur
 - `logout()` - Déconnecter
 - `isAuthenticated()` - Vérifier l'état
 - `getToken()` - Récupérer le token
 
 #### doctors.service.ts
+
 - `getDoctors()` - List
 - `getDoctorById()` - Get
 - `createDoctor()` - Create
@@ -757,6 +788,7 @@ app.listen(PORT, () => {
 - `deleteDoctor()` - Delete
 
 #### medicines.service.ts
+
 - `getMedicines()` - List
 - `getMedicineById()` - Get
 - `createMedicine()` - Create
@@ -764,6 +796,7 @@ app.listen(PORT, () => {
 - `deleteMedicine()` - Delete
 
 #### reports.service.ts
+
 - `getReports()` - List (token requis)
 - `getReportById()` - Get
 - `createReport()` - Create (token requis)
@@ -811,16 +844,19 @@ CREATE DATABASE gsbrapports;
 ### ❌ "Login failed 401"
 
 **Cause 1:** Identifiants incorrects
+
 ```bash
 # Vérifier: aribiA / aaaa
 ```
 
 **Cause 2:** Token expiré
+
 ```bash
 # Solution: Se reconnecter
 ```
 
 **Cause 3:** API ne répond pas
+
 ```bash
 # Vérifier que Backend tourne bien
 npm start  # Dans gsb-node-api-samir/
@@ -891,6 +927,7 @@ npm test -- --include='**/doctors-page.spec.ts'
 ## 📦 Build Production
 
 ### Build Backend
+
 ```bash
 cd gsb-node-api-samir
 # Pas de build nécessaire, l'app Node.js tourne directement
@@ -898,6 +935,7 @@ npm start
 ```
 
 ### Build Frontend
+
 ```bash
 cd GSBDoctor-12-03-2026
 npm run build
@@ -939,7 +977,7 @@ cd gsb_doctors
 # Terminal 1 - Backend
 cd gsb-node-api-samir && npm install && npm start
 
-# Terminal 2 - Frontend  
+# Terminal 2 - Frontend
 cd GSBDoctor-12-03-2026 && npm install && npm start
 
 # Navigateur
