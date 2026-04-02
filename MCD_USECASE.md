@@ -93,70 +93,70 @@ CONCERNER: RAPPORT (1,1) <-> MEDECIN (1,n)
 OFFRIR(quantite): RAPPORT (0,n) <-> MEDICAMENT (0,n)
 APPARTENIR: MEDICAMENT (1,1) <-> FAMILLE (0,n)
 ```
+
 ## Annexe 2: FONCTIONNALITES / Diagramme des Cas d'Utilisation (Use Case)
 
 ### Diagramme textuel des Use Cases
 
-```
----
+========================================================================================
+                      DIAGRAMME DES CAS D'UTILISATION : GSBDoctor
+========================================================================================
 
-useCaseDiagram
-    actor "Internaute" as I
-    actor "Visiteur (authentifié)" as V
-    actor "Admin" as A
-
-    V --|> I
-    A --|> V
-
-    package "Système GSBDoctor" {
-        usecase "S'inscrire" as UC1
-        usecase "Se connecter" as UC2
-        usecase "Authentifier (JWT)" as UC_AUTH
-        
-        usecase "Se déconnecter" as UC3
-        usecase "Consulter les médecins" as UC4
-        usecase "Consulter les médicaments" as UC5
-        usecase "Consulter les rapports" as UC6
-        
-        usecase "Gérer les médecins" as UC7
-        usecase "Gérer les médicaments" as UC8
-        usecase "Gérer les familles" as UC9
-        usecase "Gérer les rapports (CRUD/Modération)" as UC10
-        usecase "Rechercher un rapport" as UC11
-
-        UC1 ..> UC_AUTH : <<include>>
-        UC2 ..> UC_AUTH : <<include>>
-        UC10 ..> UC11 : <<include>>
-    }
-
-    I --> UC1
-    I --> UC2
-    V --> UC3
-    V --> UC4
-    V --> UC5
-    V --> UC6
-    A --> UC7
-    A --> UC8
-    A --> UC9
-    A --> UC10
+        ACTEURS                     |         FRONTALIER DU SYSTÈME GSBDoctor
+                                    |
+------------------------------------|---------------------------------------------------
+                                    | ..................................................
+   (O)                              | :                                                :
+  /|-   Internaute                  | :   ( S'inscrire ) <-------.                     :
+  / \   (non authentifié)           | :                          |                     :
+   |      |                         | :                          V (include)           :
+   |______|.........................| :-->|                { Authentifier }            :
+          |                         | :-->|                     (JWT)                  :
+          |                         | :   ( Se connecter ) <-----'                     :
+          |                         | :                                                :
+------------------------------------| :------------------------------------------------:
+          V (Héritage/Géné.)        | :                                                :
+   (O)                              | :   ( Se déconnecter )                           :
+  /|-   Visiteur                    | :          ^                                     :
+  / \   (authentifié)               | :          |                                     :
+   |      |                         | :-->|--------------------.                       :
+   |______|.........................| :-->| Consulter médecins |                       :
+          |                         | :-->|--------------------|                       :
+          |                         | :-->| Cons. médicaments  |                       :
+          |                         | :-->|--------------------|                       :
+          |                         | :-->| Consulter rapports |                       :
+          |                         | :   '--------------------'                       :
+------------------------------------| :------------------------------------------------:
+          V (Héritage/Géné.)        | :                                                :
+   (O)                              | :   .--------------------.                       :
+  /|-   Admin                       | :-->| Gérer les médecins |<--.                   :
+  / \                               | :-->|--------------------|   |                   :
+   |______|.........................| :-->| Gérer médicaments  |   |                   :
+                                    | :-->|--------------------|   | (include)         :
+                                    | :-->| Gérer les familles |   |                   :
+                                    | :-->|--------------------|   V                   :
+                                    | :-->| Gérer les rapports |--->{ Rechercher }     :
+                                    | :   '--------------------'      un rapport       :
+                                    | :................................................:
+------------------------------------|---------------------------------------------------
 
 
     ┌──────────────────────────────────────────────────────┐
-    │         ACTEURS DE L'APPLICATION                    │
+    │         ACTEURS DE L'APPLICATION                     │
     ├──────────────────────────────────────────────────────┤
     │ • INTERNAUTE (Non authentifié)                       │
-    │   → Seulement: S'inscrire, voir /login              │
+    │   → Seulement: S'inscrire, voir /login               │
     │                                                      │
     │ • UTILISATEUR AUTHENTIFIÉ                            │
-    │   → Consulter médecins, médicaments, rapports       │
-    │   → Créer/Modifier/Supprimer les rapports          │
-    │   → Se déconnecter                                  │
+    │   → Consulter médecins, médicaments, rapports        │
+    │   → Créer/Modifier/Supprimer les rapports            │
+    │   → Se déconnecter                                   │
     │                                                      │
     │ • ADMIN                                              │
-    │   → Toutes les fonctionnalités UTILISATEUR          │
-    │   → Gestion complète: Médecins + Médicaments       │
-    │   → Gestion des familles                            │
-    │   → Modération des rapports                         │
+    │   → Toutes les fonctionnalités UTILISATEUR           │
+    │   → Gestion complète: Médecins + Médicaments         │
+    │   → Gestion des familles                             │
+    │   → Modération des rapports                          │
     └──────────────────────────────────────────────────────┘
 ```
 
