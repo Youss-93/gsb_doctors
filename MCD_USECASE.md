@@ -93,87 +93,52 @@ CONCERNER: RAPPORT (1,1) <-> MEDECIN (1,n)
 OFFRIR(quantite): RAPPORT (0,n) <-> MEDICAMENT (0,n)
 APPARTENIR: MEDICAMENT (1,1) <-> FAMILLE (0,n)
 ```
-
----
-
 ## Annexe 2: FONCTIONNALITES / Diagramme des Cas d'Utilisation (Use Case)
 
 ### Diagramme textuel des Use Cases
 
 ```
-┌────────────────────────────────────────────────────────────────────┐
-│                 SYSTÈME GSBDoctor - USE CASES                      │
-└────────────────────────────────────────────────────────────────────┘
+---
 
+useCaseDiagram
+    actor "Internaute" as I
+    actor "Visiteur (authentifié)" as V
+    actor "Admin" as A
 
-                    ┌─────────────────────────┐
-                    │ <<include>>             │
-                    │ Authentifier            │
-                    │ - Vérifier credentials  │
-                    │ - Générer token JWT     │
-                    └────────┬────────────────┘
-                             ▲
-                      ┌──────┴─────┐
-                      │            │
-            ┌─────────▼─────┐  ┌───▼────────────┐
-            │   S'inscrire  │  │  Se Connecter  │
-            ├───────────────┤  ├────────────────┤
-            │ - Créer compte│  │ - Login/Pass   │
-            │ - Hash pwd    │  │ - Stockage JWT │
-            │ - DB insert   │  │ - Redirection  │
-            └───────────────┘  └────────────────┘
-                 │                      │
-                 └──────────┬───────────┘
-                            │
-                ┌───────────▼──────────────────┐
-                │      UTILISATEUR             │
-                │     (Authentifié)            │
-                └──────────┬───────────────────┘
-                           │
-       ┌───────────────────┼───────────────────┐
-       │                   │                   │
-       │               Optionnel               │
-       │           (si rôle = Admin)           │
-       │                   │                   │
-  ┌────▼─────────┐  ┌─────▼──────────┐  ┌────▼──────────────┐
-  │Se Déconnecter│  │Gérer Médecins  │  │Gérer Médicaments │
-  ├──────────────┤  ├────────────────┤  ├───────────────────┤
-  │- Supprimer   │  │- Créer         │  │- Créer            │
-  │  token       │  │- Consulter     │  │- Consulter        │
-  │- Redirection │  │- Modifier      │  │- Modifier         │
-  │  /login      │  │- Supprimer     │  │- Supprimer        │
-  └──────────────┘  │- Lister        │  │- Rechercher       │
-                    │- Rechercher    │  │- Filtrer (famille)│
-                    └────────────────┘  └───────────────────┘
-                           │                    │
-                    ┌──────▼────────────────────▼┐
-                    │  Consulter les Médecins   │
-                    ├───────────────────────────┤
-                    │- Afficher liste           │
-                    │- Recherche (nom/spec/dept)│
-                    │- Pagination (50 par page) │
-                    │- Voir détails             │
-                    └───┬──────────────┬────────┘
-                        │              │
-    ┌───────────────────▼──┐  ┌────────▼─────────────┐
-    │Consulter Médicaments │  │Gérer les Rapports   │
-    ├──────────────────────┤  ├─────────────────────┤
-    │- Afficher liste      │  │- Créer rapport      │
-    │- Recherche           │  │- Consulter rapport  │
-    │- Filtrer (famille)   │  │- Modifier rapport   │
-    │- Voir détails        │  │- Supprimer rapport  │
-    │- Consulter effets    │  │- Rechercher         │
-    │- Consulter risques   │  │- Filtrer (date)    │
-    └──────────────────────┘  └─────────────────────┘
-                                      │
-                            ┌─────────▼────────────┐
-                            │ Rechercher Rapport   │
-                            ├──────────────────────┤
-                            │- Par date            │
-                            │- Par médecin         │
-                            │- Par motif           │
-                            │- Pagination          │
-                            └──────────────────────┘
+    V --|> I
+    A --|> V
+
+    package "Système GSBDoctor" {
+        usecase "S'inscrire" as UC1
+        usecase "Se connecter" as UC2
+        usecase "Authentifier (JWT)" as UC_AUTH
+        
+        usecase "Se déconnecter" as UC3
+        usecase "Consulter les médecins" as UC4
+        usecase "Consulter les médicaments" as UC5
+        usecase "Consulter les rapports" as UC6
+        
+        usecase "Gérer les médecins" as UC7
+        usecase "Gérer les médicaments" as UC8
+        usecase "Gérer les familles" as UC9
+        usecase "Gérer les rapports (CRUD/Modération)" as UC10
+        usecase "Rechercher un rapport" as UC11
+
+        UC1 ..> UC_AUTH : <<include>>
+        UC2 ..> UC_AUTH : <<include>>
+        UC10 ..> UC11 : <<include>>
+    }
+
+    I --> UC1
+    I --> UC2
+    V --> UC3
+    V --> UC4
+    V --> UC5
+    V --> UC6
+    A --> UC7
+    A --> UC8
+    A --> UC9
+    A --> UC10
 
 
     ┌──────────────────────────────────────────────────────┐
